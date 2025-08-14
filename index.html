@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Digital Poster — Your Web App</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg-1:#0f172a; /* slate-900 */
+      --bg-2:#1e293b; /* slate-800 */
+      --accent:#7c3aed; /* violet-600 */
+      --accent-2:#22d3ee; /* cyan-400 */
+      --text:#e5e7eb; /* gray-200 */
+      --muted:#94a3b8; /* slate-400 */
+      --card:#0b1022ee;
+      --ring:#a78bfa55;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;}
+    body{
+      margin:0;
+      background: radial-gradient(1200px 800px at 10% 10%, rgba(124,58,237,.25), transparent 60%),
+                  radial-gradient(800px 600px at 90% 20%, rgba(34,211,238,.25), transparent 60%),
+                  linear-gradient(180deg, var(--bg-1), var(--bg-2));
+      font-family:"Inter", system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
+      color:var(--text);
+      display:grid;
+      place-items:center;
+      padding:24px;
+    }
+
+    /* Poster wrapper maintains 4:5 aspect (1080x1350 style) */
+    .poster{
+      width:min(100%, 900px);
+      aspect-ratio:4/5;
+      background:linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+      border:1px solid rgba(255,255,255,0.08);
+      border-radius:28px;
+      box-shadow: 0 20px 60px rgba(0,0,0,.45), inset 0 0 0 1px rgba(255,255,255,.06);
+      position:relative;
+      overflow:hidden;
+    }
+
+    /* Glow ring */
+    .ring{
+      position:absolute; inset:-40% -20% auto auto; width:70%; aspect-ratio:1/1; border-radius:50%;
+      background: radial-gradient(circle at 50% 50%, var(--ring), transparent 60%);
+      filter: blur(30px); pointer-events:none;
+    }
+
+    .content{
+      position:relative; z-index:2; height:100%; display:grid; grid-template-rows:auto 1fr auto; padding:36px 36px 24px;
+      backdrop-filter: saturate(140%) blur(0px);
+    }
+
+    header{ display:flex; align-items:center; gap:14px; }
+    .logo{
+      width:56px; height:56px; border-radius:16px; display:grid; place-items:center;
+      background:linear-gradient(135deg, var(--accent), var(--accent-2));
+      box-shadow: 0 10px 30px rgba(124,58,237,.45), 0 0 0 6px rgba(255,255,255,.04);
+    }
+    .logo svg{ width:34px; height:34px; color:white; }
+
+    .brand{ line-height:1.1; }
+    .brand .name{ font: 700 24px/1 "Poppins", sans-serif; letter-spacing:.2px; }
+    .brand .tag{ font: 500 13px/1.4 "Inter"; color:var(--muted); }
+
+    .hero{ display:grid; grid-template-columns:1.1fr .9fr; gap:24px; align-items:center; margin-top:22px; }
+
+    .headline{
+      font: 700 clamp(32px, 5.2vw, 56px)/1.05 "Poppins", sans-serif;
+      letter-spacing:.2px;
+      margin:0 0 18px 0;
+    }
+    .kicker{ color:var(--accent-2); font-weight:600; text-transform:uppercase; letter-spacing:2px; font-size:12px; }
+    .subhead{ color:var(--muted); font-size:clamp(14px, 1.8vw, 18px); margin:0 0 18px 0; }
+
+    .badges{ display:flex; gap:10px; flex-wrap:wrap; margin:14px 0 18px; }
+    .badge{ padding:8px 12px; border:1px solid rgba(255,255,255,.1); border-radius:999px; font-size:12px; color:#dbeafe; background:rgba(30,58,138,.35); }
+
+    .cta-row{ display:flex; gap:14px; align-items:center; flex-wrap:wrap; }
+    .btn{
+      appearance:none; border:none; padding:14px 18px; border-radius:14px; font-weight:700; letter-spacing:.2px; cursor:pointer;
+      background:linear-gradient(135deg, var(--accent), var(--accent-2)); color:white;
+      box-shadow:0 8px 24px rgba(124,58,237,.45);
+    }
+    .btn.secondary{ background:transparent; color:var(--text); border:1px solid rgba(255,255,255,.18); box-shadow:none; }
+
+    .sidecard{
+      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:22px; padding:18px; display:grid; gap:12px; box-shadow:inset 0 0 0 1px rgba(255,255,255,.02);
+    }
+
+    .mock{ aspect-ratio: 10/13; border-radius:16px; overflow:hidden; border:1px solid rgba(255,255,255,.12); background:linear-gradient(180deg, #111827, #0b1022); display:grid; place-items:center; }
+    .mock img{ width:100%; height:100%; object-fit:cover; display:block; filter: contrast(1.05) saturate(1.05); }
+    .caption{ font-size:12px; color:var(--muted); text-align:center; }
+
+    .features{ display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-top:6px; }
+    .feature{ background:rgba(2,6,23,.5); border:1px solid rgba(255,255,255,.08); border-radius:14px; padding:12px; display:flex; gap:10px; align-items:flex-start; }
+    .feature svg{ width:18px; height:18px; flex:0 0 auto; }
+    .feature h4{ font:600 13px/1.2 "Inter"; margin:0 0 4px; }
+    .feature p{ margin:0; font-size:12px; color:var(--muted); }
+
+    footer{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:18px; }
+    .qr{ display:flex; align-items:center; gap:12px; }
+    .qr img{ width:70px; height:70px; border-radius:10px; background:#fff; padding:6px; }
+    .link{ font-size:12px; color:var(--muted); }
+
+    /* Print / Export to PDF */
+    @media print{
+      body{ padding:0; background:white; }
+      .poster{ width:100%; aspect-ratio:auto; height:100vh; border:none; border-radius:0; box-shadow:none; }
+      .btn, .secondary{ display:none; }
+    }
+
+    /* Responsive */
+    @media (max-width: 840px){
+      .hero{ grid-template-columns:1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="poster" role="img" aria-label="Promotional poster for a web application">
+    <div class="ring" aria-hidden="true"></div>
+    <div class="content">
+      <header>
+        <div class="logo" aria-hidden="true">
+          <!-- Simple spark icon -->
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2v4"/><path d="M12 18v4"/><path d="M4.93 4.93l2.83 2.83"/><path d="M16.24 16.24l2.83 2.83"/><path d="M2 12h4"/><path d="M18 12h4"/><path d="M4.93 19.07l2.83-2.83"/><path d="M16.24 7.76l2.83-2.83"/>
+          </svg>
+        </div>
+        <div class="brand">
+          <div class="name">Your App Name</div>
+          <div class="tag">Tagline or one‑liner goes here</div>
+        </div>
+      </header>
+
+      <section class="hero">
+        <div>
+          <div class="kicker">New • Fast • Secure</div>
+          <h1 class="headline">Do more with <span style="background:linear-gradient(90deg, var(--accent), var(--accent-2)); -webkit-background-clip:text; background-clip:text; color:transparent;">Your Web App</span></h1>
+          <p class="subhead">A crisp sentence about the core benefit. Keep it short, specific, and outcome‑driven so people instantly get why they should try it.</p>
+
+          <div class="badges">
+            <div class="badge">No signup required</div>
+            <div class="badge">Works on any device</div>
+            <div class="badge">Free starter</div>
+          </div>
+
+          <div class="cta-row">
+            <button class="btn" onclick="window.open('https://yourapp.example.com','_blank')">Try it now</button>
+            <button class="btn secondary" onclick="window.print()">Export as PDF</button>
+          </div>
+
+          <div class="features">
+            <div class="feature">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 7h-9"/><path d="M14 17H5"/><circle cx="7" cy="7" r="2"/><circle cx="17" cy="17" r="2"/>
+              </svg>
+              <div>
+                <h4>Connect instantly</h4>
+                <p>One‑click setup. No complex onboarding.</p>
+              </div>
+            </div>
+            <div class="feature">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="18" height="14" rx="2" ry="2"/><path d="M8 21h8"/><path d="M12 17v4"/>
+              </svg>
+              <div>
+                <h4>Real‑time insights</h4>
+                <p>Live dashboards keep everyone aligned.</p>
+              </div>
+            </div>
+            <div class="feature">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 2l3 7 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1 3-7z"/>
+              </svg>
+              <div>
+                <h4>Beautiful UI</h4>
+                <p>Delightful on desktop, tablet, and mobile.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <aside class="sidecard">
+          <div class="mock">
+            <!-- Replace with your app screenshot -->
+            <img src="https://images.unsplash.com/photo-1556157382-97eda2d62296?q=80&w=1200&auto=format&fit=crop" alt="App screenshot placeholder" />
+          </div>
+          <div class="caption">Drop your screenshot above</div>
+        </aside>
+      </section>
+
+      <footer>
+        <div class="qr">
+          <!-- Replace the chl parameter with your app URL -->
+          <img alt="QR code to open the app" src="https://chart.googleapis.com/chart?cht=qr&chs=200x200&chl=https%3A%2F%2Fyourapp.example.com&chld=H|0" />
+          <div>
+            <div style="font-weight:700">Scan to get started</div>
+            <div class="link">yourapp.example.com</div>
+          </div>
+        </div>
+        <div class="link">© <span id="year"></span> Your Company • #YourHashtag</div>
+      </footer>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
